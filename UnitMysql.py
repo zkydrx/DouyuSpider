@@ -1,7 +1,5 @@
 #!/usr/bin/python
 import pymysql
-from Host_info import *
-import time,datetime
 
 
 class Unit_Mysql:
@@ -75,10 +73,10 @@ class Unit_Mysql:
         cur = con.cursor()
         try:
             sql_str = "insert into host_info  (username, kind, timestamp, w_number, room_number, link, online, " \
-                      "coefficient)" \
-                      " values ('%s', '%s','%s','%s','%s','%s','%s','%s')" \
+                      "coefficient,followers)" \
+                      " values ('%s', '%s','%s','%s','%s','%s','%s','%s','%s')" \
                       % (host.username, host.kind, host.localtime, host.w_number, host.room_number, host.link,
-                         host.online, host.coefficient)
+                         host.online, host.coefficient, host.followers)
             cur.execute(sql_str)
             con.commit()
         except:

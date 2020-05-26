@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 import json
-from bs4 import BeautifulSoup
-import re
+
 import requests
-import time
-import datetime
 
 
 def open_html(url):

@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-from bs4 import BeautifulSoup
-import re
+import datetime
+import json
+import time
+
 import requests
+
 from Host_info import *
 from UnitMysql import Unit_Mysql
-import time
-import json
-import datetime
 
 
 def open_html(url):
@@ -28,7 +28,21 @@ def get_online_number(room_number):       #获取斗鱼的实际在线人数
         return online_number
 
 
-def caculate_rate(w_watching, online):  #计算影响因子
+# 获取该主播粉丝数
+def get_followers_number(room_number):
+    url = "https://www.douyu.com/swf_api/h5room/" + room_number
+    html = open_html(url)
+    try:
+        json_a = json.loads(html)
+        follower_number = 0
+        follower_number = int(json_a['data']['fans'])
+    except:
+        follower_number = 0
+    finally:
+        return follower_number
+
+
+def caculate_rate(w_watching, online):  # 计算影响因子
     result = 0.0
     if online == 0:
         return result
@@ -60,6 +74,7 @@ def get_info():
         w_watching =""
         kind = ""
         online = 0
+        followers = 0
 
         rid = ""
         json_a = json.loads(html)
@@ -75,6 +90,7 @@ def get_info():
                     username = data['nn']
                     w_watching = data['ol']
                     kind = data['c2name']
+                    followers = get_followers_number(rid)
                     online = get_online_number(rid)
                     coefficient = caculate_rate(w_watching, online)
                     link = "https://www.douyu.com/" + rid
@@ -88,6 +104,7 @@ def get_info():
                     host.coefficient = coefficient
                     host.link = link
                     host.localtime = datetime1
+                    host.followers = followers
                     # unit = Unit_Mysql()
                     Unit_Mysql.insert_db(host)
                     count += 1
@@ -101,7 +118,10 @@ def get_info():
         a += 1
     print(save_a)
     endtime = datetime.datetime.now()
-    print("Running Time:"+(endtime-starttime).seconds)
+    print("Running Time:" + (endtime - starttime).seconds)
 
 
 get_info()
+
+if __name__ == '__main__':
+    print("开始抓取数据！！！")
